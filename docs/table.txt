@@ -1,0 +1,94 @@
+create table site(
+    code_site varchar(10) not null,
+    nom_site varchar(50),
+    ville varchar(50),
+    adresse varchar(100),
+    primary key(code_site));
+    
+create table service(
+    code_service varchar(20) not null,
+    nom_service varchar(50),
+    budget_annuel decimal, 
+    primary key(code_service));
+    
+create table collaborateur(
+    matricule varchar(10) not null,
+    nom varchar(20),
+    prenom varchar(20),
+    email varchar(255) unique,
+    num_tel varchar(15), 
+    date_embauche date,
+    code_site varchar(10),
+    code_service varchar(20),
+    primary key(matricule),
+    foreign key(code_site) REFERENCES site(code_site),
+	foreign key(code_service) REFERENCES service(code_service));
+    
+create table categorie(
+    id_categorie varchar(20) not null,
+    libelle varchar(50),
+    duree_amortissement_ans decimal,
+    primary key(id_categorie));
+    
+create table fournisseur(
+    id_fournisseur varchar(20) not null,
+    raison_sociale varchar(50),
+    contact_email varchar(255),
+    telephone varchar(15), 
+    delai_livraison_jours int, 
+    primary key(id_fournisseur));
+    
+create table equipement(
+    num_serie varchar(10) not null,
+    marque varchar(50),
+    modele varchar(50),
+    date_achat date, 
+    prix decimal,
+    date_fin_garantie date,
+    etat varchar(15),
+    id_categorie varchar(20),
+    id_fournisseur varchar(20),
+    primary key(num_serie),
+	foreign key(id_categorie) REFERENCES categorie(id_categorie),
+	foreign key(id_fournisseur) REFERENCES fournisseur(id_fournisseur));
+
+    
+create table ticket_incident(
+    num_ticket int not null,
+    date_ouverture date,
+    description_panne text,
+    niveau_urgence int check (niveau_urgence between 1 and 10),
+    statut varchar(30), 
+    date_cloture date,
+    matricule varchar(10),
+    num_serie varchar(10), 
+    primary key(num_ticket),
+	foreign key(matricule) REFERENCES collaborateur(matricule),
+	foreign key(num_serie) REFERENCES equipement(num_serie));
+    
+create table logiciel(
+    id_logiciel varchar(10) not null,
+    nom_logiciel varchar(50),
+    editeur varchar(50),
+    version varchar(20),
+    type_licence varchar(50), 
+    primary key(id_logiciel));
+    
+create table affecter(
+    num_serie varchar(10),
+    matricule varchar(10),
+    date_attribution date,
+    date_restitution date,
+    etat varchar(15),
+    primary key(num_serie, matricule),
+	foreign key(matricule) REFERENCES collaborateur(matricule),
+	foreign key(num_serie) REFERENCES equipement(num_serie));
+    
+create table installer(
+    id_logiciel varchar(10),
+    num_serie varchar(10),
+    date_instalation date,
+    cle_licence varchar(50),
+    primary key(num_serie, id_logiciel),
+    foreign key(id_logiciel) REFERENCES logiciel(id_logiciel),
+    foreign key(num_serie) REFERENCES equipement(num_serie));
